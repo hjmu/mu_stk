@@ -62,17 +62,17 @@ class Strategy_OLS(BASE):
         y_mean = np.mean(y1)
         slope_norm = regr.coef_[0] / y_mean
 
-        print(pl(), stcode, stname, regr.coef_[0],y1)
+
         if (
                 (self.gt > 0 and regr.coef_[0] > self.positiveSlopeThreshold) #gt>0, 斜率大於 threshold
                 or
                 (self.gt < 0 and regr.coef_[0] < self.positiveSlopeThreshold)
         ):
-
+            print(pl(), stcode, stname, regr.coef_[0], y1)
             self.openbrowser(stcode)
 
             # if (regr.coef_[0] > -0.5 and regr.coef_[0] < 0.5):
-            print(pl(), '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+            # print(pl(), '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
             # print(pl(), '\t',regr.coef_[0], '  ', y_mean, '  ', slope_norm)
             y_new = model.predict(x[:, np.newaxis])
             y_past = model2.predict(x[:, np.newaxis])

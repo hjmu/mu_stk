@@ -32,15 +32,17 @@ class Main_Backend(BASE):
         # exit(0)
 
         db = BASE_DB()
-        df = db.getStList()
-        # print(df)
+        df_stks = db.getStList()
+        # print(df_stks)
 
-        n = 1
-        for row in df.itertuples():
+        for i, row in enumerate(df_stks.itertuples(), 1):
+            # print(i, row.name)
+        # n = 1
+        # for row in df_stks.itertuples():
             stcode = row.stcode
             stname = row.stname
-            # print(pl(),'_'+stcode+',', stname)
-            n = n + 1
+
+            # n = n + 1
 
             df = db.getClosePrices(stcode)
             # df = df.iloc[-300:]
@@ -52,19 +54,19 @@ class Main_Backend(BASE):
             # if stcode=='2303':
             #     print('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
             if (len(df.index) <= 0):
-                print(pl(), stcode, stname, ',len <0, skip')
+                # print(pl(), stcode, stname, ',len <0, skip')
                 continue
 
             # 成交量 < 1000 張
             vol = df['stvol'].values[-1:] / 1000
             if (vol < 1000):
-                print(pl(), stcode, stname, '  vol ', vol,' low, skip')
+                # print(pl(), stcode, stname, '  vol ', vol,' low, skip')
                 continue;
 
             # 股價 <10 或 >200
             price = df['stclose'].values[-1:]
             if (price < 10 or price > 200):
-                print(pl(), stcode, stname, '  price ', price, ' out of range, skip')
+                # print(pl(), stcode, stname, '  price ', price, ' out of range, skip')
                 continue;
 
             # print(pl(), stcode, " ", price, " ", vol)
@@ -78,7 +80,7 @@ class Main_Backend(BASE):
             # print(df)
             # break
 
-
+            print(pl(), i, df_stks.shape[0], '_' + stcode + ',', stname)
             self.doOLS(stcode, stname, df)
 
         # print("\n")
