@@ -1,6 +1,6 @@
 
 
-DB_PATH="c:/mu_py/mydata.db"
+DB_PATH="c:/mu_py_db/mydata.db"
 
 FRONT_LOG_FILE="c:/temp/mylog.txt"
 LOG_FMT="[{time:YYYY-MM-DD HH:mm:ss} {level} {file} {function} ({line})] {message}"
