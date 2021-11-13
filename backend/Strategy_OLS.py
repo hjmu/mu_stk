@@ -35,8 +35,8 @@ class Strategy_OLS(BASE):
         plt.show()
 
     def run(self, stcode, stname, df):
-        min = df['stclose'].min() - 10
-        max = df['stclose'].max() + 10
+        min = df['stclose'].min() - df['stclose'].min()*0.010
+        max = df['stclose'].max() + df['stclose'].max()*0.010
 
         x = df.index.values         #橫軸的值序列
         y = df['stclose'].values    #縱軸的值序列
@@ -66,7 +66,7 @@ class Strategy_OLS(BASE):
         if (
                 (self.gt > 0 and regr.coef_[0] > self.positiveSlopeThreshold) #gt>0, 斜率大於 threshold
                 or
-                (self.gt < 0 and regr.coef_[0] < self.positiveSlopeThreshold)
+                (self.gt < 0 and regr.coef_[0] < -self.positiveSlopeThreshold)
         ):
             print(pl(), stcode, stname, regr.coef_[0], y1)
             self.openbrowser(stcode)
@@ -114,7 +114,8 @@ class Strategy_OLS(BASE):
     def openbrowser(self,stcode):
         # url = "http://google.com" # 注意:"http://"不可省略
 
-        url = 'https://tw.stock.yahoo.com/q/ta?s=' + stcode
+        # url = 'https://tw.stock.yahoo.com/q/ta?s=' + stcode
+        url = 'https://pchome.megatime.com.tw/stock/sto0/ock1/sid'+ stcode+'.html'
 
         # webbrowser.open(url)
         # webbrowser.open_new(url)
