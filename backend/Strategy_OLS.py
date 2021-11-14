@@ -3,7 +3,6 @@ from BASE_DB import BASE_DB
 import numpy as np
 from Utils import *
 
-
 import webbrowser
 from BASE import BASE
 
@@ -16,7 +15,7 @@ class Strategy_OLS(BASE):
 
     def __init__(self, positiveSlopeThreshold, gt, winsize=3):
         self.positiveSlopeThreshold = positiveSlopeThreshold
-        self.gt = gt #1:上走 0:下行
+        self.gt = gt  # 1:上走 0:下行
         self.winsize = winsize
 
     def myplot(self, stcode, stname, x, y, y_new, y_new2, min, max):
@@ -35,18 +34,18 @@ class Strategy_OLS(BASE):
         plt.show()
 
     def run(self, stcode, stname, df):
-        min = df['stclose'].min() - df['stclose'].min()*0.010
-        max = df['stclose'].max() + df['stclose'].max()*0.010
+        min = df['stclose'].min() - df['stclose'].min() * 0.010
+        max = df['stclose'].max() + df['stclose'].max() * 0.010
 
-        x = df.index.values         #橫軸的值序列
-        y = df['stclose'].values    #縱軸的值序列
+        x = df.index.values  # 橫軸的值序列
+        y = df['stclose'].values  # 縱軸的值序列
 
-        #取最新的 winsize 個點
+        # 取最新的 winsize 個點
         x1 = df.index.values[-self.winsize:]
         x1 = x1.reshape((-1, 1))
         y1 = df['stclose'].values[-self.winsize:]
 
-        #取 winsize 之前的一段
+        # 取 winsize 之前的一段
         x2 = df.index.values[-self.winsize - 14:-self.winsize]
         x2 = x2.reshape((-1, 1))
         y2 = df['stclose'].values[-self.winsize - 14:-self.winsize]
@@ -62,23 +61,14 @@ class Strategy_OLS(BASE):
         y_mean = np.mean(y1)
         slope_norm = regr.coef_[0] / y_mean
 
-
         if (
-                (self.gt > 0 and regr.coef_[0] > self.positiveSlopeThreshold) #gt>0, 斜率大於 threshold
+                (self.gt > 0 and regr.coef_[0] > self.positiveSlopeThreshold)  # gt>0, 斜率大於 threshold
                 or
                 (self.gt < 0 and regr.coef_[0] < -self.positiveSlopeThreshold)
         ):
             print(pl(), stcode, stname, regr.coef_[0], y1)
             self.openbrowser(stcode)
-
-            # if (regr.coef_[0] > -0.5 and regr.coef_[0] < 0.5):
-            # print(pl(), '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
-            # print(pl(), '\t',regr.coef_[0], '  ', y_mean, '  ', slope_norm)
-            y_new = model.predict(x[:, np.newaxis])
-            y_past = model2.predict(x[:, np.newaxis])
-            self.myplot(stcode, stname, x, y, y_new, y_past, min, max)
-
-
+            # self.doplot(stcode, stname, x, y, model, model2, min, max)
 
         # df['slope'] = df['stclose'].rolling(Strategy_OLS.winsize).apply(self.moving_slope, raw=False)
         # df['intercept'] = df['stclose'].rolling(Strategy_OLS.winsize).apply(self.moving_intercept, raw=False)
@@ -111,16 +101,24 @@ class Strategy_OLS(BASE):
         #     plt.title(stcode + ' ' + stname + ', ' + str(slope_norm) + "," + "{:10.4f}".format(slope_norm))
         #     plt.show()
 
-    def openbrowser(self,stcode):
-        # url = "http://google.com" # 注意:"http://"不可省略
+    def doplot(self, stcode, stname, x, y, model, model2, min, max):
+        # if (regr.coef_[0] > -0.5 and regr.coef_[0] < 0.5):
+        # print(pl(), '^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+        # print(pl(), '\t',regr.coef_[0], '  ', y_mean, '  ', slope_norm)
 
-        # url = 'https://tw.stock.yahoo.com/q/ta?s=' + stcode
-        url = 'https://pchome.megatime.com.tw/stock/sto0/ock1/sid'+ stcode+'.html'
+        y_new = model.predict(x[:, np.newaxis])
+        y_past = model2.predict(x[:, np.newaxis])
+        self.myplot(stcode, stname, x, y, y_new, y_past, min, max)
+
+    def openbrowser(self, stcode):
+        if(self.gt <= 0):
+            url = 'https://tw.stock.yahoo.com/q/ta?s=' + stcode
+        else:
+            url = 'https://pchome.megatime.com.tw/stock/sto0/ock1/sid' + stcode + '.html'
 
         # webbrowser.open(url)
         # webbrowser.open_new(url)
         webbrowser.open_new_tab(url)
-
 
     def moving_slope(self, values):
         x = np.arange(values.size)
